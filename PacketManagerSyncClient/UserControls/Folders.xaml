@@ -1,0 +1,110 @@
+<plugin:UserControlBase x:Class="PacketManagerSyncClient.UserControls.Folders"
+	xmlns:vm="clr-namespace:PacketManagerCommons.ViewModels;assembly=PacketManagerCommons"
+	
+	xmlns:plugin="clr-namespace:Plugin.WPF;assembly=Plugin.WPF"
+	xmlns:wpftk="clr-namespace:Microsoft.Windows.Controls;assembly=WPFToolkit.Extended"
+	
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<plugin:UserControlBase.Resources>
+		<BooleanToVisibilityConverter x:Key="boolConv"/>
+		<plugin:MultiConverterBoolToBackground x:Key="multiboolconv" />
+		<Style TargetType="TreeViewItem">
+			<Setter Property="IsExpanded" Value="True" />
+		</Style>
+		<DataTemplate DataType="{x:Type vm:Vers}" >
+			<WrapPanel>
+				<Border x:Name="border">
+					<CheckBox IsChecked="{Binding Sync}" IsEnabled="{Binding CanSync}"  VerticalAlignment="Center" Margin="2 2 2 2"/>
+				</Border>
+				<Expander Header="{Binding Name}" VerticalAlignment="Center" >
+					<StackPanel Margin="0 15">
+						<WrapPanel>
+							<Button Content="O" ToolTip="Open Folder" Command="{Binding OpenDir}" Width="25" Margin="5 0 5 0"/>
+							<TextBlock Text="Open Folder"  VerticalAlignment="Center" />
+						</WrapPanel>
+						<WrapPanel>
+							<Button Content="X" ToolTip="Delete Folder" Command="{Binding DeleteDir}" Width="25" Margin="5 0 5 0"/>
+							<TextBlock Text="Delete Folder"  VerticalAlignment="Center" />
+						</WrapPanel>
+					</StackPanel>
+				</Expander>
+			</WrapPanel>
+			<DataTemplate.Triggers>
+				<DataTrigger Value="True">
+					<DataTrigger.Binding>
+						<MultiBinding Converter="{StaticResource multiboolconv}"  >
+							<Binding Path="DataContext.Sync"  RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="DataContext.CanSync"   RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="DataContext.FileExists"   RelativeSource="{RelativeSource TemplatedParent}"/>
+						</MultiBinding>
+					</DataTrigger.Binding>
+					<Setter Property="Background" TargetName="border" Value="Green" ></Setter>
+				</DataTrigger>
+			</DataTemplate.Triggers>
+		</DataTemplate>
+		<HierarchicalDataTemplate DataType="{x:Type vm:App}" ItemsSource="{Binding List}" >
+			<WrapPanel>
+				<WrapPanel.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="{Binding OpenDir}" Header="Open Directory" />
+						<MenuItem Command="{Binding DeleteDir}" Header="Delete Directory" />
+					</ContextMenu>
+				</WrapPanel.ContextMenu>
+				<Border x:Name="border">
+					<CheckBox IsChecked="{Binding SyncLatest}"  IsEnabled="{Binding CanSyncLatest}" Margin="2 2 2 2"/>
+				</Border>
+				
+				<TextBlock Text="{Binding Name}" />
+				<StackPanel Visibility="{Binding SyncLatest, Converter={StaticResource boolConv}}">
+					<TextBlock Margin="10 0 0 0" DataContext="{Binding Latest}" Text="{Binding Name, StringFormat={} - {0}  -}" />
+				</StackPanel>
+			</WrapPanel>
+			<DataTemplate.Triggers>
+				<DataTrigger Value="True">
+					<DataTrigger.Binding>
+						<MultiBinding Converter="{StaticResource multiboolconv}"  >
+							<Binding Path="DataContext.SyncLatest"  RelativeSource="{RelativeSource TemplatedParent}"/>
+							<Binding Path="DataContext.Latest.FileExists"   RelativeSource="{RelativeSource TemplatedParent}"/>
+						</MultiBinding>
+					</DataTrigger.Binding>
+					<Setter Property="Background" TargetName="border" Value="Green" ></Setter>
+				</DataTrigger>
+			</DataTemplate.Triggers>
+		</HierarchicalDataTemplate>
+		<HierarchicalDataTemplate DataType="{x:Type vm:Arch}" ItemsSource="{Binding List}" >
+			<WrapPanel>
+				<WrapPanel.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="{Binding OpenDir}" Header="Open Directory" />
+						<MenuItem Command="{Binding DeleteDir}" Header="Delete Directory" />
+					</ContextMenu>
+				</WrapPanel.ContextMenu>
+				<TextBlock Text="{Binding Name}" />
+			</WrapPanel>
+		</HierarchicalDataTemplate>
+		<HierarchicalDataTemplate DataType="{x:Type vm:OS}" ItemsSource="{Binding List}" >
+			<WrapPanel>
+				<WrapPanel.ContextMenu>
+					<ContextMenu>
+						<MenuItem Command="{Binding OpenDir}" Header="Open Directory" />
+						<MenuItem Command="{Binding DeleteDir}" Header="Delete Directory" />
+					</ContextMenu>
+				</WrapPanel.ContextMenu>
+				<TextBlock Text="{Binding Name}" />
+			</WrapPanel>
+		</HierarchicalDataTemplate>
+	</plugin:UserControlBase.Resources>
+	<DockPanel>
+		<WrapPanel DockPanel.Dock="Top">
+			<Button Command="{Binding Refresh}">Refresh</Button>
+		</WrapPanel>
+		<wpftk:BusyIndicator IsBusy="{Binding OSes.IsBusy}" DisplayAfter="0" >			
+			<DockPanel>
+				<TreeView
+					ItemsSource="{Binding OSes.List}"
+				/>
+			</DockPanel>
+		</wpftk:BusyIndicator>
+	</DockPanel>
+</plugin:UserControlBase>

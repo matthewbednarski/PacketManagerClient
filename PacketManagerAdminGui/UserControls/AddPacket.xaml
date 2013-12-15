@@ -1,0 +1,99 @@
+<plugin:UserControlBase x:Class="PacketManagerAdminGui.UserControls.AddPacket"
+             xmlns:uc="clr-namespace:PacketManagerAdminGui.UserControls"
+             xmlns:plugin="clr-namespace:Plugin.WPF;assembly=Plugin.WPF"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<DockPanel>
+		<StackPanel
+			DockPanel.Dock="Top">
+			<WrapPanel >
+				<TextBlock Text="OS:" Width="50" />
+				<ComboBox
+					x:Name="cb_os"
+					Width="120"
+					ItemsSource="{Binding OSes.List}"
+					DisplayMemberPath="Name"
+					SelectedItem="{Binding CurrentOS}"
+					IsEditable="False"
+					IsSynchronizedWithCurrentItem="True"
+				/>
+			</WrapPanel>
+			
+			<WrapPanel HorizontalAlignment="Stretch">
+				<TextBlock Text="Archs:"  Width="50"/>
+				<ComboBox
+					x:Name="cb_archs"
+					Width="120"
+					ItemsSource="{Binding CurrentOS.List}"
+					DisplayMemberPath="Name"
+					SelectedItem="{Binding CurrentArch}"
+					
+					IsEditable="False"
+					IsSynchronizedWithCurrentItem="True"
+				/>
+			</WrapPanel>
+			<WrapPanel HorizontalAlignment="Stretch">
+				<TextBlock Text="Name:"  Width="50"/>
+				<TextBox
+					x:Name="cb_name"
+					Width="120"
+					Text="{Binding Packet.name , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				/>
+				
+				<Button
+					DockPanel.Dock="Bottom"
+					Command="{Binding Browse}">ADD</Button>
+				<Button
+					DockPanel.Dock="Bottom"
+					Command="{Binding AddImageCommand}">Image</Button>
+				<!--<ComboBox
+					x:Name="cb_apps"
+					Width="120"
+					ItemsSource="{Binding CurrentArch.List}"
+					DisplayMemberPath="Name"
+					SelectedItem="{Binding CurrentApp}"
+					
+					IsEditable="True"
+					IsSynchronizedWithCurrentItem="True"
+				/>-->
+			</WrapPanel>
+			<WrapPanel HorizontalAlignment="Stretch">
+				<TextBlock Text="Version:"  Width="50"/>
+				<TextBox
+					x:Name="cb_vers"
+					Width="120"
+					Text="{Binding Packet.version , Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:#.#.#}}"
+				/>
+				<Button
+					DockPanel.Dock="Bottom"
+					Command="{Binding Load}">LOAD</Button>
+			</WrapPanel>
+			<ListBox
+				ItemsSource="{Binding Images}"
+			>
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal">
+							<CheckBox IsChecked="{Binding IsToLoad}"  Margin="5"/>
+							<Image Source="{Binding Value}"  Width="30" Height="30">
+								<Image.ToolTip>
+									<StackPanel>
+										<TextBlock Text="{Binding Value}"/>
+										<Image Source="{Binding Value}" MaxHeight="200"/>										
+									</StackPanel>
+								</Image.ToolTip>
+							</Image>
+							<Button Command="{Binding Path=VM.RemoveImageCommand,
+							        RelativeSource={RelativeSource FindAncestor, AncestorType=uc:AddPacket, AncestorLevel=1}}"
+							        CommandParameter="{Binding}"
+							        ToolTip="Remove Image"
+							        Width="10" Height="10"
+								>-</Button>
+						
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+	</DockPanel>
+</plugin:UserControlBase>
